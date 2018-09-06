@@ -6,9 +6,9 @@ const Hoek = require('hoek');
 
 // requiring settings
 const Settings = require('./settings');
-const server = new Hapi.Server();
-
-server.connection({ port: Settings.port });
+const server = new Hapi.Server({
+	port: Settings.port
+});
 
 server.route({
 	method: 'GET',
