@@ -4,7 +4,7 @@
 const Hapi = require('hapi');
 const Hoek = require('hoek');
 
-// creating settings
+// requiring settings
 const Settings = require('./settings');
 const server = new Hapi.Server();
 
