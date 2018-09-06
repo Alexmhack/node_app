@@ -106,3 +106,155 @@ console.log("SERVER RUNNING ON http://127.0.0.1:3000");
 
 Open [this](http://127.0.0.1:3000) url in browser and you will get ```Hello World``` 
 displayed on the screen.
+
+Let's walkthrough the javascript code.
+
+We start by requiring Node's [HTTP module](https://nodejs.org/api/http.html). We then 
+use its ```createServer``` method to create a new web server object, to which we pass 
+an anonymous function. This function will be invoked whenever a new connection is made 
+to server.
+
+The anonymous function is called with two arguments ```(request, response)``` which 
+contain the request from the user and the response, which we use to send back a 200 
+HTTP status code, along with our "Hello World" message.
+
+Finally we tell the server to listen for incoming connection requests on port 3000,
+and output a message to the terminal to let us know that server is running.
+
+For a detailed documentation on HTTP module head to Node http [docs](https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/)
+
+# Laying Foundation For App
+In this section we will be laying out basic foundation for our **Note Taking App** 
+using the MVC architectue. We will be employing [Hapi.js](https://hapijs.com/) framework for Node.js and [sqlite](https://www.sqlite.org/index.html)
+as a database using [Sequelize.js](http://docs.sequelizejs.com/) plus other utilities to speed up our development.
+
+# What is MVC ?
+**Model-View-Controller** is one of the most popular architecture for applications.
+This architecture was a solution to the problem of organizing applications with 
+graphical user interfaces. 
+
+1. **Model:** The part of application that deals with the database or any data-related 
+functionality. For example - [Django Models](https://docs.djangoproject.com/en/2.1/topics/db/models/)
+
+2. **View:** Everything related to client-side or the pages we send to the client.
+
+3. **Controller:** The logic of our site, and the glue between models and views. Models
+get the data and then put data on views to be sent to users.
+
+Our application will have features like publishing, editing, seeing, deleting 
+plain-text nodes. 
+
+# Laying Out Foundation
+The first step when building any Node.js application is to create a **package.json** file, which is going to contain all of our dependencies and scripts. This can be done 
+by running
+
+**cmd**
+```
+npm init -y
+wrote to package.json
+
+{
+  "name": "node_app",
+  "version": "1.0.0",
+  "description": "building our first node app using sitepoint 10 day email course",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexmhack/node_app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alexmhack/node_app/issues"
+  },
+  "homepage": "https://github.com/Alexmhack/node_app#readme"
+}
+
+```
+
+Open ```package.json``` file and you will find the same result written to it.
+
+**Install hapi and hoek**
+
+```
+npm install --save hapi hoek
+```
+
+Above command will download the latest version of Hapi.js and add it to our 
+package.json file as a dependency. It will also install hoek utility library that will 
+help us write shorter error handlers.
+
+You can look at the dependencies in package.json file
+
+**package.json**
+```
+...
+  "dependencies": {
+    "hapi": "^17.5.4",
+    "hoek": "^5.0.4"
+  }
+}
+```
+
+Create a file ```server.js``` in application directory which will the entry point for our server which will start everything.
+
+**server.js**
+```
+'use strict';
+
+// requiring modules
+const Hapi = require('hapi');
+const Hoek = require('hoek');
+```
+
+We require both the dependencies for our server so we import them.
+
+```
+// requiring settings
+const Settings = require('./settings');
+const server = new Hapi.Server();
+```
+
+Then we get our settings and create a new Hapi Server instance.
+
+```
+server.connection({ port: Settings.port });
+```
+
+We set the connection port for our server equal to the **port** defined in our settings.
+
+```
+server.route({
+	method: 'GET',
+	path: '/',
+	handler: (request, reply) => { reply('Hello World'); }
+});
+```
+
+Our server replies ```'Hello World'``` for **GET** request to default ```/``` path
+
+```
+server.start((err) => {
+	Hoek.assert(!err, err);
+	console.log(`Server running at: ${server.info.url}`);
+});
+```
+
+We start server and print a message saying the url for server and catch and assert any
+error if found.
+
+**NOTE:** In each route, we have to define the HTTP method and path (URL) that it will
+respond to, and a handler which is a function that will process the HTTP request. The 
+handler function can take two arguments: ```request``` and ```reply```. The first one
+contains information about the HTTP call and second will provide us with methods to
+handle our response to that call.
+
+We use Hoek to improve our error handling, making it shorter.
+
+# Creating Setting For Project
+We will be using [dotenv]() for using **.env** file which will have values that needs
+to be kept hidden during production
