@@ -256,5 +256,104 @@ handle our response to that call.
 We use Hoek to improve our error handling, making it shorter.
 
 # Creating Setting For Project
-We will be using [dotenv]() for using **.env** file which will have values that needs
-to be kept hidden during production
+We will be using [dotenv]() for using **.env** file which will have environment 
+variables that needs to be kept hidden during production. It is a good practise to 
+store our configuration variables in a dedicated file. This file exports a JSON object 
+containing our data,where each key is assigned from an environment variable -- but 
+without forgetting a fallback value.
+
+Install **dotenv** using
+
+```
+npm install -s dotenv
+```
+
+**settings.js** 
+
+```
+require('dotenv').config({silent: true});
+
+module.exports = {
+	port: process.env.PORT || 3000,
+	env: process.env.ENV || 'development',
+	// Environment - dependent settings
+	development: {
+		db: {
+			dialect: 'sqlite',
+			storage: ':memory:'
+		}
+	},
+	production: {
+		db: {
+			dialect: 'sqlite',
+			storage: 'db/database.sqlite'
+		}
+	}
+};
+```
+
+**Moment of truth**
+
+Run the server using
+
+```
+node server.js
+```
+
+You get an error saying 
+
+```
+server.connection is not a function ...
+```
+
+```server.connection``` used to be a function but in Node v8 we pass in the port
+variable directly to ```Hapi.Server()``` object
+
+**Edit the code a bit in server.js**
+```
+// requiring settings
+const Settings = require('./settings');
+const server = new Hapi.Server({
+	port: Settings.port
+});
+```
+
+Here ```Settings.port``` is the ```port``` env variable whose value is ```3000```
+
+**settings.js**
+```
+require('dotenv').config({ silent: true });
+
+module.exports = {
+	port: process.env.PORT || 3000,
+	...
+```
+
+And navigate to [localhost](http://127.0.0.1:3000/) url and you get an error saying
+
+```
+{"statusCode":500,"error":"Internal Server Error","message":"An internal server error occurred"}
+```
+
+Look at your terminal
+
+```
+Debug: internal, implementation, error
+    TypeError: reply is not a function
+    ...
+```
+
+Ok so another error, solve this by
+
+```
+...
+server.route({
+	method: 'GET',
+	path: '/',
+	handler: (request, h) => { return 'Hello World'; }
+});
+...
+```
+
+In the new version ```reply``` no longer exists, we just return the value we want on 
+route.
