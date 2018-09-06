@@ -1,0 +1,24 @@
+{
+  "name": "node_app",
+  "version": "1.0.0",
+  "description": "building our first node app using sitepoint 10 day email course",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexmhack/node_app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alexmhack/node_app/issues"
+  },
+  "homepage": "https://github.com/Alexmhack/node_app#readme",
+  "dependencies": {
+    "hapi": "^17.5.4",
+    "hoek": "^5.0.4"
+  }
+}
