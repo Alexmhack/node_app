@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Alexmhack/node_app#readme",
   "dependencies": {
+    "dotenv": "^6.0.0",
     "hapi": "^17.5.4",
     "hoek": "^5.0.4"
   }
